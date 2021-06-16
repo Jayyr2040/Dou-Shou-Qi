@@ -1,0 +1,60 @@
+.colorID {
+    background-color: black;
+    color: white;
+    text-align: center;
+
+  }
+
+  img {
+      width: 100%;
+      height : 100%;
+  }
+
+
+.gameRowRef {
+    display: flex;
+    text-align: center;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+   
+
+
+}
+.gameColRef {
+    background-color: azure;
+    width: 80px;
+    height: 80px;
+    border:1px solid black;
+    cursor: pointer;
+    vertical-align: middle;   /*keep boxes on same vertical plane when content added */
+    /* box-sizing: content-box; */
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  color:black
+}
+
+#generate {
+    background-color: lightblue;
+
+}
+
+.btn {
+    cursor: pointer;
+    color: black;
+}
+
+.btn:hover {
+    border: 2px solid red;
+  }
+
+#animalNowA {
+    width: 180px;
+}
+
+#animalNowB {
+    width: 180px;
+}
+

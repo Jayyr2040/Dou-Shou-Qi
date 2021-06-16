@@ -58,3 +58,22 @@
     width: 180px;
 }
 
+
+
+
+.top{
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-body {
+    color: black;
+}
+
+.modal-title {
+    color: black;
+}
+
+

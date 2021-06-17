@@ -863,7 +863,7 @@ const render = () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const playBackgroundMusic = () => {
         console.log("playBackgroundMusic");
-        let obj = $('<audio>').attr({src : game.Animal[9].sound, muted : "muted"});
+        let obj = $('<audio>').attr({src : game.Animal[9].sound, muted : true});
         obj[0].loop = true;
         obj[0].playbackRate = 0.9;
         obj[0].volume = 0.02;

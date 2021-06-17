@@ -826,8 +826,7 @@ const intro = () => {
         $('.gameBoardMain').append($("<button>").addClass("btn btn-info btn-sm sg").text("Start Game").on("click", render).css({"background-color": "#99d0f2","color":"black","width": "100px"}));
         $('.sg').hide();
         $(".titleMain").fadeIn(4000);
-        $('.sg').delay(3000).fadeIn()
-        playBackgroundMusic();
+        $('.sg').delay(3000).fadeIn();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // render function ()
@@ -864,7 +863,7 @@ const render = () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const playBackgroundMusic = () => {
         console.log("playBackgroundMusic");
-        let obj = $('<audio>').attr("src",game.Animal[9].sound);
+        let obj = $('<audio>').attr({src : game.Animal[9].sound, muted : "muted"});
         obj[0].loop = true;
         obj[0].playbackRate = 0.9;
         obj[0].volume = 0.02;
@@ -874,7 +873,7 @@ const playBackgroundMusic = () => {
 // Main
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const main = () => {
-        //playBackgroundMusic();
+        playBackgroundMusic();
         intro();
 };
 

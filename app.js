@@ -1,4 +1,4 @@
-//! Program = Data + Logic (Made of functions) // APP9.JS to be used for updating 16th June 2021
+//! Program = Data + Logic (Made of functions) // APP13.JS is the latest file to be uploaded on 17th June 2021
 //! Input => Functions => Output (console, Jquery)
 //! Data => (nouns) variables, array, objects
 //! Logic -> (verbs) functions
@@ -75,16 +75,16 @@ const game = {
 // This function executes the win message or next turn (regenerating board and switch player) based on the outcome input from MovementBfinal ()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const nxTurn = (outcome) => {
+        console.log("nxTurn");
         //congtraluate player if it is a win
         if(outcome === "WinA"|| outcome === "WinB"){
-                //if (outcome === "WinA"){wincount1 += 1}
-                //else if (outcome === "WinB"){wincount2 += 1};
-                playOnce = 0;
+                generateBoard();                // updates the board based on the updated Board array  
                 playSound(21);
                 messageTitle = "Game End";
-                messageBody = `Player ${isA} win!. Press reset to play again!`;
+                messageBody = `Player ${isA} win! Press reset to play again!`;
                 updateModal();
                 $('.modal').modal("show");
+                playOnce = 0;                   //reinitialize to set game to restart
         }
         else if (outcome === "next") {
                 // clears the board, change player turn and updates the screen
@@ -101,7 +101,7 @@ const nxTurn = (outcome) => {
 // This function is called by getAnimal () and executes the change in values in the array and calls the nxTurn() for win message or next player turn
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const executeMovement = (currentCoordinate,nextCoordinate,validMove) => { 
-        console.log("Movement");
+        console.log("executeMovement");
         const cRow = currentCoordinate.row;
         const cCol = currentCoordinate.col;
         const nxRow = nextCoordinate.row;
@@ -157,6 +157,7 @@ const executeMovement = (currentCoordinate,nextCoordinate,validMove) => {
 // This function is called by comparePowers() and will check if you are at the trap
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const IsTrap = (row,col) => {
+        console.log("IsTrap")
         let trapPosition = 0;
         const trap_A = 1;
         const trap_B = 2;
@@ -175,6 +176,7 @@ const executeMovement = (currentCoordinate,nextCoordinate,validMove) => {
 // This function is called by comparePowers() and will check if you are at the just outside or inside the river
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const IsRiver = (row,col) => {
+    console.log("IsRiver")
     const inRiver = 3;
     const outsideRiver = 4;
         let riverPosition = 0;
@@ -192,6 +194,7 @@ const IsRiver = (row,col) => {
 // whether can eat the next piece
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const comparePowers = (CoordinateArr, AnimalArr) => { 
+        console.log("comparePowers")
         const cAnimal = AnimalArr[0];
         let powersOfCurrentAnimal = game.Animal[cAnimal].power;
         const nxAnimal = AnimalArr[1];
@@ -210,6 +213,7 @@ const comparePowers = (CoordinateArr, AnimalArr) => {
         const atTrap_A = 1;
         const atTrap_B = 2;
         const inRiver = 3;
+        const outsideRiver = 4;
 
         // Check for next move if it is a trap
         trapPosition = IsTrap(nxRow,nxCol);
@@ -233,9 +237,28 @@ const comparePowers = (CoordinateArr, AnimalArr) => {
                             return "";
                         }
                 else if (powersOfCurrentAnimal < powersOfNextAnimal ) {
-                        messageTitle = "Not strong enough!";
-                        messageBody = `A ${game.Animal[cAnimal].name} cannot move on a ${game.Animal[nxAnimal].name}. Please choose again!`;
-                        return "";
+                                messageTitle = "Not strong enough!";
+                                messageBody = `A ${game.Animal[cAnimal].name} cannot move on a ${game.Animal[nxAnimal].name}. Please choose again!`;
+
+                        if ((IsTrap(cRow,cCol) === atTrap_A && (cAnimal >= rat_B && cAnimal < trap_B)) || (IsTrap(cRow,cCol) === atTrap_B && cAnimal <= elephant_A)) 
+                                {
+                                        console.log(cAnimal,nxAnimal-10);
+                                if      (cAnimal <= elephant_A){
+                                        if (cAnimal >= (nxAnimal-10)) 
+                                        {
+                                        messageTitle = "Exception Rule!";
+                                        messageBody = `${game.Animal[cAnimal].name} is weaken by the trap. Please choose again!`;
+                                        }
+                                        }
+                                else if (cAnimal >= rat_B && cAnimal < trap_B){
+                                        if ((cAnimal-10) >= nxAnimal) 
+                                        {
+                                        messageTitle = "Exception Rule!";
+                                        messageBody = `${game.Animal[cAnimal].name} is weaken by the trap. Please choose again!`;
+                                        }
+                                        }
+                                }
+                                return "";
                         }
                 else if (powersOfCurrentAnimal >= powersOfNextAnimal) {
                         if (trapPosition === atTrap_B && cAnimal <= elephant_A){
@@ -244,7 +267,22 @@ const comparePowers = (CoordinateArr, AnimalArr) => {
                         else if (trapPosition === atTrap_A && (cAnimal >= rat_B && cAnimal < trap_B)){
                                 game.Animal[cAnimal].power = 0;              // when player 2 pieces step into player 1 trap, power drops to 0
                         }
-                        else if ((cAnimal === rat_A && nxAnimal === rat_B) || (cAnimal === rat_B && nxAnimal === rat_A)){return "exitRiver"}
+                        else if ((cAnimal === rat_A && nxAnimal === rat_B) || (cAnimal === rat_B && nxAnimal === rat_A))
+                                {       if (IsRiver(cRow,cCol) === inRiver)     // rat cannot eat rat when it is in a river, otherwise all else ok
+                                        {
+                                        messageTitle = "Exception Rule";
+                                        messageBody = `A ${game.Animal[cAnimal].name} in a river cannot move on a ${game.Animal[nxAnimal].name}. Please choose again!`;    
+                                        return ""
+                                        }
+                                        else if ((trapPosition === atTrap_A) || (trapPosition === atTrap_B)) 
+                                        {
+                                        return "eat"
+                                        }
+                                        else if (IsRiver(cRow,cCol) === outsideRiver){
+                                        return "eat"
+                                        }
+                                        return "eat"
+                                }
                         else if (((IsTrap(cRow,cCol) === atTrap_A) && (cAnimal <= elephant_A))) {
                                 return "exitTrapA";
                         }
@@ -254,11 +292,11 @@ const comparePowers = (CoordinateArr, AnimalArr) => {
                         return "eat";
                 };                                      // this will return eat regardless since the powers of animal 1 > animal 2, including trap and den
         }
-        else {
-            messageTitle = "Not a valid Move";
-            messageBody = "Please choose again!";
-            return ""
-            };
+        else    {
+                messageTitle = "Not a valid Move";
+                messageBody = "Please choose again!";
+                return ""
+                };
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // moveForward ()
@@ -334,6 +372,7 @@ const jumpRight = (coordinate) => {
 // This function will intro a new source attribute of audio by recieving the animal input and play the repective sound
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const playSound = (animal) => {
+        console.log("playSound");
         let obj = $('<audio>').attr("src",game.Animal[animal].sound);
         obj[0].volume = 0.1;
         obj[0].play();
@@ -342,6 +381,7 @@ const playSound = (animal) => {
 // out function () is check if the coordinate calculated by the getAnimal function is within the constraints of the board 9 (rows) x 7 (cols)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const out = (coordinate) => {
+        console.log("out");
         if (coordinate.row > 8 || coordinate.row < 0 || coordinate.col <0 || coordinate.col > 6 )
                 {return true}
         else    {return false}
@@ -401,16 +441,25 @@ const getOrder = (CoordinateArr, AnimalArr) => {
                     if (currentAnimal !== rat_A || currentAnimal !== rat_B  ){  
                         MessageHeader = "Wrong Selection";
                         MessageBody =`A ${currentAnimal} cannot enter river`;    // if the current selected animal is not a rat 
-                        return ""                               }    }          // "" means not valid move    
-                validMove = comparePowers(CoordinateArr, AnimalArr);   // all else will go and compare power to decide on the next move
+                        validMove ="";                    }    
+                        }          // "" means not valid move    
+                        validMove = comparePowers(CoordinateArr, AnimalArr);   // all else will go and compare power to decide on the next move
                 break;
 
             case den_A: // Entering into Player 1 den, only allowing player 2
                 if (currentAnimal >= rat_B && currentAnimal <= elephant_B){validMove = "WinB";}
+                else {messageTitle = "Wrong selection"
+                      messageBody = `You cannot enter into your own den. Please select again!`
+                      validMove ="";
+                }
                 break;
 
             case den_B: // Entering into player 2 den, only allowing player 1 
                 if (currentAnimal <= elephant_A){validMove = "WinA";}
+                else {messageTitle = "Wrong selection"
+                      messageBody = `You cannot enter into your own den. Please select again!`
+                      validMove ="";
+                }
                 break;
 
             default:
@@ -424,6 +473,7 @@ const getOrder = (CoordinateArr, AnimalArr) => {
 // or it is at the vertical section of the river, it will then return a 3 and 4 repectively
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const isArdRiver = (row,col) => {
+        console.log("isArdRiver");
         let riverPosition = 0;
         const onHorizonBank = 3;
         const onVerticalBank = 4;
@@ -440,6 +490,8 @@ const isArdRiver = (row,col) => {
 // emptys the respective temp arr and recommends player to choose again
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const playerWrongChoice =() => {
+        console.log("playerWrongChoice");
+        console.log(CoordinateArr);
         CoordinateArr = [];
         AnimalArr = [];
         highlight = [];
@@ -456,8 +508,6 @@ const playerWrongChoice =() => {
 // 5. User will then select the next move, call a function MovementB() to get the orders(validMove = swop) and MovementBFinal() to execute the order
 // 6. The board will be refresh by calling on generateBoard()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 const getAnimal = (event) => {
         console.log("getAnimal");
         // Initialize the variables
@@ -467,7 +517,6 @@ const getAnimal = (event) => {
         let nxCoordinate = {row: 0, col: 0};
         let gridColor ="";
  
-
         // This part is when you click on an animal for the first time to select the animal
         if (step1 === true){
         animal.row = parseInt($(event.currentTarget).parent().attr("id"));
@@ -493,7 +542,6 @@ const getAnimal = (event) => {
             // This part is to check if you accidentally chose 10,20- trap, 21,22 - den, 0 -space to move, t will flag cannot move, choose another
                 if (animal.value === trapA || animal.value === trapB || animal.value === denA || animal.value === denB || animal.value === riverG || animal.value === spaceS) 
                 {
-                        //alert("You cannot move that piece.. Choose another");
                         messageTitle = "Wrong selection";
                         messageBody = `A ${game.Animal[animal.value].name} cannot be moved. Please choose again!`;
                         updateModal();
@@ -517,7 +565,6 @@ const getAnimal = (event) => {
                 { 
                         messageTitle = "Wrong Turn";
                         messageBody = `It should be player ${isA}'s turn. Please select again!`;
-                        //alert("It's B's turn");
                         updateModal();
                         $('.modal').modal("show");
                         playerWrongChoice();
@@ -655,6 +702,8 @@ const getAnimal = (event) => {
                 nxAnimal.value = game.Board[nxAnimal.row][nxAnimal.col];
                 CoordinateArr.push(nxCoordinate);
                 AnimalArr.push(nxAnimal.value);
+                console.log(CoordinateArr);
+                console.log(AnimalArr);
                 validMove = getOrder(CoordinateArr,AnimalArr);
                 if (validMove !== ""){
                         executeMovement(CoordinateArr[0],CoordinateArr[1],validMove);
@@ -706,6 +755,7 @@ const generateBoard = () => {
 // assigning the original array in game board 2 into game Board
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const refreshBoard =() => {
+        console.log("refreshBoard");
         for (let i = 0; i < game.Board2.length;i++){
                 for (let j = 0; j < game.Board2[i].length;j++){
                     game.Board[i][j] = game.Board2[i][j];
@@ -719,35 +769,40 @@ const refreshBoard =() => {
 const gameRules = () => {
         console.log("gameRules");
         const $body = $("body");
+        playOnce = 2;
         $(".gameBoardMain").empty(); // refreshes the body
         $(".gameBoardMain").append($("<br>"));
         $(".gameBoardMain").append($("<div>").addClass("mainDiv").css({"border" :"1px solid white","width" : "780px","margin": "0 auto"}));
         $(".mainDiv").append($("<br>"));
-        $(".mainDiv").append($("<h3>").text("Rules of Game").css("text-decoration","underline"));
+        $(".mainDiv").append($("<h3>").text("Game Rules").css("text-decoration","underline"));
         $(".mainDiv").append($("<h6>").text("1. Each piece has A or B indicated on the top left corner, indicating which player's animal"));
-        $(".mainDiv").append($("<h6>").text("2. Each piece has a power (1-8) shown on the top right corner"));
+        $(".mainDiv").append($("<h6>").text("2. Each animal has a power (1-8) shown on the top right corner"));
         $(".mainDiv").append($("<br>"));
         $(".mainDiv").append($('<img>').attr("src", game.Animal[11].source).css("width","100px"));
-        $(".mainDiv").append($("<h6>").text("3. Animal with higher or equal powers will win against their opponent"));
+        $(".mainDiv").append($('<div>').addClass("second").css({"width": "25px", "height": "25px", "background-color": "black"}));
+        $(".mainDiv").append($("<h6>").text("3. The animal with higher or equal powers will win against their opponent"));
         $(".mainDiv").append($("<br>"));
         $(".mainDiv").append($('<div>').addClass("top"));
         $(".top").append($('<img>').addClass("first").attr("src", game.Animal[7].source).css("width","100px"));
         $(".top").append($('<div>').addClass("second").css({"width": "80px", "height": "80px", "background-color": "black","font-size" : "40px"}).text(">"));
-        $(".top").append($('<img>').addClass("third").attr("src", game.Animal[12].source).css("width","100px"));
+        $(".top").append($('<img>').addClass("third").attr("src", game.Animal[12].source).css("width","60px"));
+        $(".mainDiv").append($("<br>"));
         $(".mainDiv").append($("<h6>").text("4. Only exception is Rat (power 1) will triumph against Elephant (power 8)"));
         $(".mainDiv").append($("<h6>").text("5. Each animal can only move one step (not diagonally) at a time per turn"));
         $(".mainDiv").append($("<h6>").text("6. Only exception is tiger (power 6) and lion (power 7) can jump across river banks"));
         $(".mainDiv").append($("<h6>").text("7. Only rat can enter the river"));
         $(".mainDiv").append($("<h6>").text("8. To win, your animal has to enter the opponent's den"));
         $(".mainDiv").append($("<br>"));
-        $(".mainDiv").append($("<br>"));
         $(".mainDiv").append($("<button>").addClass("btn btn-danger btn-sm").text("Proceed").on("click", render)); // Proceed to close the game rules
+        $(".mainDiv").append($('<div>').addClass("second").css({"width": "25px", "height": "25px", "background-color": "black"}));
         $body.append($(".gameBoardMain"));
+
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// updateModal function ()
+// updateModal function () provides prompt
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const updateModal = () => {
+        console.log("updateModal");
         const modalDiv = $('.modal');
         modalDiv.empty();
         modalDiv.append($('<div class="modal-dialog modal-dialog-centered" role="document">'));
@@ -759,33 +814,55 @@ const updateModal = () => {
         $('.modal-footer').append($('<button type="button" class="btn btn-primary">Close</button>').on("click",()=>{$('.modal').modal("hide")}));
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// intro function () Showing Game name and a start button
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const intro = () => {
+        console.log("intro");
+        const $body = $("body");
+        $body.empty(); // refreshes the body
+        $body.append($("<div>").addClass("gameBoardMain")); 
+        $('.gameBoardMain').append($("<div>").addClass("letterMain1"));
+        $('.letterMain1').append($("<div>").addClass("titleMain").text("Dou Shou Qi").css({"font-size":"120px", "display":"none"}));
+        $('.gameBoardMain').append($("<button>").addClass("btn btn-info btn-sm sg").text("Start Game").on("click", render).css({"background-color": "#99d0f2","color":"black","width": "100px"}));
+        $('.sg').hide();
+        $(".titleMain").fadeIn(4000);
+        $('.sg').delay(3000).fadeIn()
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // render function ()
 // This function display the opening page of the Game displaying only the name of the game and the menu options available
 // Displays generate board button (calls generateBoard function), reset button (calls render function), game rules button (calls gameRules function) 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const render = () => {
+        console.log("render");
+        if (playOnce === 2)                      // after game start playonce turn to 2, this is for allowing to check game rules again during game
+        {generateBoard();                        // regnerate board after player proceeds after reading rules
+        playOnce = 0;                            // turn playOnce to 0 so that can reset the game whenever needed. nxTurn will turn it to 1 when game in play again
+        }                   
+        else{
         const $body = $("body");
         $body.empty(); // refreshes the body
-        playOnce = 0;
+        playOnce = 0;  
         refreshBoard();
         // displays the screen and menu buttons
         isA = "A";
-        $body.append($("<h1>").text("Dou Shou Qi"));
+        $body.append($("<h2>").text("Dou Shou Qi"));
         $div = $("<div>").addClass("Menu");
-        $div.append($("<button>").addClass("btn btn-info btn-sm").attr("id", "generate").text("Generate Game").css("width", "200px").on("click",generateBoard)); //Press to make new game
-        $div.append($("<button>").addClass("btn btn-danger btn-sm").text("Reset Game").on("click", render).css({"background-color": "pink","width": "200px"})); // Reset any point of time
+        $div.append($("<button>").addClass("btn btn-info btn-sm").attr("id", "generate").text("Start New Game").css("width", "200px").on("click",generateBoard)); //Press to make new game
+        $div.append($("<button>").addClass("btn btn-danger btn-sm").text("Reset Game").on("click", render).css({"background-color": "pink","color":"black","width": "200px"})); // Reset any point of time
         $div.append($("<button>").addClass("btn btn-info btn-sm").text("Game Rules").css({"background-color": "#f5d742","width": "200px"}).on("click",gameRules)); // Keep score of Player 1
         $div.append($("<button>").addClass("btn btn-danger btn-sm").attr("id", "turn").css({"background-color": "#lightred","width": "200px"}).text("Player "+ isA + "'s turn")); // Let's you know whose turn it is
         $body.append($div);
         $body.append($("<div>").addClass("gameBoardMain")); 
         $body.append($('<div class="modal fade" aria-hidden="true">'));
         updateModal();
-
+        }
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // playBackgroundMusic function ()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const playBackgroundMusic = () => {
+        console.log("playBackgroundMusic");
         let obj = $('<audio>').attr("src",game.Animal[9].sound);
         obj[0].loop = true;
         obj[0].playbackRate = 0.9;
@@ -797,7 +874,7 @@ const playBackgroundMusic = () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const main = () => {
         playBackgroundMusic();
-        render();
+        intro();
 };
 
 $(main);

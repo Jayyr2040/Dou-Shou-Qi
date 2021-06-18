@@ -50,8 +50,7 @@ Areas of improvement: Planning is critical for writing a efficient code. Probabl
 to plan.
 
 ## Acknowledgements
-Give credit here.
-- This project was done referencing https://boardgamegeek.com/
+This project was done referencing https://boardgamegeek.com/
 
 <!-- Optional -->
 <!-- ## License -->

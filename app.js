@@ -791,7 +791,8 @@ const gameRules = () => {
         $(".mainDiv").append($("<h6>").text("5. Each animal can only move one step (not diagonally) at a time per turn"));
         $(".mainDiv").append($("<h6>").text("6. Only exception is tiger (power 6) and lion (power 7) can jump across river banks"));
         $(".mainDiv").append($("<h6>").text("7. Only rat can enter the river"));
-        $(".mainDiv").append($("<h6>").text("8. To win, your animal has to enter the opponent's den"));
+        $(".mainDiv").append($("<h6>").text("8. The trap will weaken the opponent's power"));
+        $(".mainDiv").append($("<h6>").text("9. To win, your animal has to enter the opponent's den"));
         $(".mainDiv").append($("<br>"));
         $(".mainDiv").append($("<button>").addClass("btn btn-danger btn-sm").text("Proceed").on("click", render)); // Proceed to close the game rules
         $(".mainDiv").append($('<div>').addClass("second").css({"width": "25px", "height": "25px", "background-color": "black"}));

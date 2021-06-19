@@ -1,4 +1,4 @@
-# Dou_Shou_Qi
+# Dou-Shou-Qi
 > Objective: Develop a Javascript based game
 > Live demo [_here_](https://dou-shou-qi.vercel.app/). <!-- If you have the project hosted somewhere, include the link here. -->
 
